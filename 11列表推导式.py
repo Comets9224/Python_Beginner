@@ -1,5 +1,5 @@
 #列表推导式基本格式 最终得到一个列表
-#格式： [i for i in 可迭代的]
+#列表推导式格式1： [i for i in 可迭代的]
 
 list1=[i for i in range(1,21)]
 print(list1)
@@ -35,3 +35,21 @@ a=[(x,y,z)for x in range(1,3) for y in range(3) for z in range (1,3)]
 print(a)
 
 #请写一段代码实现分组一个列表的元素  1~100[[1,2,3],[],[]]  使用列表推导式
+# 创建一个包含1到100的列表
+numbers = list(range(1, 101))
+print(numbers)
+# 初始化一个空列表来存储分组后的结果
+grouped_numbers = []
+# 使用循环将列表分成每组三个数字的小组
+for i in range(0, len(numbers), 3):
+    grouped_numbers.append(numbers[i:i + 3])
+print(grouped_numbers)
+#列表推导式可以套推导式的。
+
+# 创建一个包含1到100的列表
+numbers2 = list(range(1, 101))
+
+# 使用列表推导式将列表分成三个子列表
+grouped_numbers2 = [numbers2[i:i + 3] for i in range(0, len(numbers2), 3)]
+
+print(grouped_numbers2)
