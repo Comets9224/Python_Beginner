@@ -26,7 +26,7 @@ while True:
     print(line)     #r是模式，不等于操作   ，加循环一行一行读
 #上述已经读取完了，再调用readline也读不到任何东西了
 # ，已经读过了，就读不到任何东西了
-
+#readline 和readlines  不一样   readline只读一行  readlines则所有都读出，一行一行放在列表里
     if not line:
         break
  #.readlines()   一次读取多行------------------>  读出来是一个列表['sasdada\n','gsajhghj\n0']
