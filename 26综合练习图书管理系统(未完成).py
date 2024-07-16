@@ -1,15 +1,15 @@
-booklib = [{'书名': '水浒', '作者': '施耐庵', 'ISBN': '95535', '出版社信息': '人民教育出版', '库存': 2},
-           {'书名': '三国', '作者': '罗中汉', 'ISBN': '95536', '出版社信息': '人民教育出版', '库存': 3},
-           {'书名': '红楼', '作者': '施耐庵', 'ISBN': '95537', '出版社信息': '人民教育出版', '库存': 10}]
-user = [{'username': 'zhang', 'phonenumber': '13586315791', 'password': '1234'},
-        {'username': 'cx', 'phonenumber': '13586315792', 'password': '1234'},
-        {'username': 'lp', 'phonenumber': '13586315793', 'password': '1234'}]
-admin = [{'username': 'admin', 'phonenumber': '18267443446', 'password': '1234'}]
-zhang = [{'书名': '水浒', '作者': '施耐庵', 'ISBN': '95535', '出版社信息': '人民教育出版'}]
-user_record = ['zhang', 'cx', 'lp']
-book_record = [[], [], [], [], []]  # 每有一个人，就新建一个空列表
-# TODO：使用 enumerate 方便地获取用户的索引。
-# 用户注册与登录
+import json
+
+admin = None
+book_record = None
+booklib = None
+user = None
+user_record = None
+# TODO:根据输入的用户名或手机号，返回手机号，手机号作为唯一id，避免同名
+# TODO:没有修改密码等等的操作,管理员也没有注销普通用户账户等操作
+"""用户注册与登录部分函数"""
+
+
 def register_user(user_name, password):
     while True:
         if len(user_name) == 11:
@@ -35,8 +35,9 @@ def register_user(user_name, password):
         print('恭喜您注册成功！请继续登录')
         break
 
-register_user()
+
 def login_user():
+    print('欢迎进入图书管理系统,请先登录:')
     while True:
         flag = False
         user_name = input('请输入用户名/手机号:')
@@ -46,17 +47,16 @@ def login_user():
                 flag = True
                 if i.get('password') == password:
                     print('登录成功,欢迎管理员进入系统')
-                    return '管理员登录'  # 返回登录成功
+                    return '管理员登录', user_name  # 返回登录成功
                 else:
                     print('管理员密码输入错误，请重新输入!')
                     break
-
         for i in user:  # user_name 是value
             if i.get('username') == user_name or i.get('phonenumber') == user_name:
                 flag = True
                 if i.get('password') == password:
                     print('登录成功,欢迎您进入系统')
-                    return '普通用户登录'  # 返回登录成功
+                    return '普通用户登录', user_name  # 返回登录成功
                 else:
                     print('密码输入错误，请重新输入!')
                     break
@@ -66,7 +66,73 @@ def login_user():
                 register_user(user_name, password)
 
 
-# 图书管理
+"""一些小的组件函数"""
+
+
+def exit_func(func):
+    def wrapper(*address, **kwargs):
+        while True:
+            func(*address, **kwargs)  # 需要修饰的f
+            work = input('是否需要退出当前操作？(y/n)')
+            if work == 'y' or work == 'Y':
+                break
+            else:
+                pass
+
+    return wrapper
+
+
+def account_pos(account, user_record):
+    user_pos = -1
+    for user in user_record:
+        user_pos += 1
+        if account == user:
+            return user_pos
+
+
+"""管理员操作部分"""
+
+
+def lib_manager(booklib):
+    print('欢迎管理员进入图书管理系统')
+    while True:
+        work = input("""
+        请输入需要进行的操作:
+        1.浏览书库
+        2.搜索书籍条目
+        3.增加书籍条目
+        4.删除书籍条目
+        5.注销管理员
+        请输入:
+        """)
+        if work == '1':
+            view_bookDir(booklib)
+        elif work == '2':
+            while True:
+                name = input('请输入想搜索的书名/ISBN:')
+                result = search_booksDir(booklib, name)
+                if result == True:
+                    con = input('你要找的书存在,是否继续查找?(y/n)')
+                    if con == 'N' or con == 'n':
+                        print('成功退出搜索操作')
+                        break
+                else:
+                    con = input('你要找的书不存在,是否继续查找?(y/n)')
+                    if con == 'N' or con == 'n':
+                        print('成功退出搜索操作')
+                        break
+        elif work == '3':
+            add_bookDir(booklib)
+        elif work == '4':
+            del_bookDir(booklib)
+        elif work == '5':
+            fini_save(admin, book_record, booklib, user, user_record)
+            break
+        else:
+            print('输入错误请重新输入')
+
+
+@exit_func  # 装饰器没括号
 def add_bookDir(booklib):  # 虽然传参和直接调用全局变量是一样的  但是  传参更有利于代码的可读性
     while True:
         tempdict = {}
@@ -87,13 +153,6 @@ def add_bookDir(booklib):  # 虽然传参和直接调用全局变量是一样的
         if not ISBN_flag:
             booklib.append(tempdict)
             print('添加成功！')
-        ifcontinueadd = input('是否继续添加？(y/n):')
-        if ifcontinueadd == 'y' or ifcontinueadd == 'Y':
-            pass
-        else:
-            print('成功退出添加操作')
-            # 调试用
-            print(booklib)
             break
 
 
@@ -121,7 +180,11 @@ def search_booksDir(booklib, bookname):
         # 返回False 表示没有找到  返回ture 表示找到了
 
 
-def del_bookDir(booklib):  # 对输入进行检测,书名可能会多一个空格导致书名字不对
+decorator_search = exit_func(search_booksDir)  # 单独的搜书功能
+
+
+@exit_func  # 如果函数里本来就要循环的，给一个break出口
+def del_bookDir(booklib):  # TODO:对输入进行检测,书名可能会多一个空格导致书名字不对
     view_bookDir(booklib)
     while True:
         flag = False
@@ -134,23 +197,37 @@ def del_bookDir(booklib):  # 对输入进行检测,书名可能会多一个空�
                 booklib.pop(i)
         if flag == True:
             view_bookDir(booklib)
-            con = input('是否继续删除?(y/n):')
-            if con == 'N' or con == 'n':
-                print('成功退出删除操作')
-                break
+            break
         if flag == False:
             print('不存在此书，请重新试试')
 
 
-# 借还管理
-def account_pos(account, user_record):
-    user_pos = -1
-    for user in user_record:
-        user_pos += 1
-        if account == user:
-            return user_pos
+"""普通用户登录操作部分"""
 
 
+def account_manager(account, user_record, booklib, book_record, admin, user):
+    while True:
+        mode = input("""
+欢迎登录
+请输入你想进行的操作:
+1.查询借了哪些书
+2.账户还书
+3.账户借书 
+4.注销登录
+(请输入数字1,2,3,4)
+""")
+        if mode == '1':  # 账户查询已经借了哪些书
+            view_borrowed_books(account, user_record, book_record)
+        elif mode == '2':  # 账户还书
+            borrow_book(booklib, account)
+        elif mode == '3':  # 账户借书
+            return_book(account, user_record, booklib)
+        elif mode == '4':
+            fini_save(admin, book_record, booklib, user, user_record)
+            break
+
+
+@exit_func
 def borrow_book(booklib, account):
     while True:
         view_bookDir(booklib)
@@ -181,22 +258,12 @@ def borrow_book(booklib, account):
                         print('库存为0,无法借阅')
                         view_bookDir(booklib)
                         # print(book_record)
-        exit_flag = input('是否退出借阅？(y/n):')
-        if exit_flag == 'y' or exit_flag == 'Y':
-            break
+        break
 
 
-def account_manager(account, mode, user_record, booklib):
-    if mode == '1':  # 账户查询已经借了哪些书
-        view_borrowed_books(account, user_record, book_record)
-    elif mode == '2':  # 账户还书
-        borrow_book(booklib, account)
-    elif mode == '3':  # 账户借书
-        return_book(account, user_record, booklib)
-
-
+@exit_func
 def return_book(account, user_record, booklib):
-    view_borrowed_books(account, user_record)
+    view_borrowed_books(account, user_record, book_record)
     while True:
         bookname = input('请输入你要还的书(书名/ISBN):')
         user_pos = account_pos(account, user_record)
@@ -219,9 +286,7 @@ def return_book(account, user_record, booklib):
                     print('账户内待还的书数量不足，请重新输入')
             else:
                 print('输入书名错误，请重新输入')
-        exit = input('是否退出还书？(y/n):')
-        if exit == 'y' or exit == 'Y':
-            break
+        break
 
 
 def view_borrowed_books(account, user_record, book_record):
@@ -238,90 +303,66 @@ def view_borrowed_books(account, user_record, book_record):
             print(name.center(10), ISBN.rjust(5), store.rjust(5))
 
 
-def lib_manager(booklib):
-    print('欢迎管理员进入图书管理系统')
-    while True:
+# TODO:库存等等字段，输入要进行判断，判断是否是数字,是否只有字母,电话号码长度是否足够
+"""数据存储部分函数"""
 
-        work = input("""
-        请输入需要进行的操作:
-        1.浏览书库
-        2.搜索书籍条目
-        3.增加书籍条目
-        4.删除书籍条目
-        请输入:
-        """)
-        if work == '1':
-            view_bookDir(booklib)
-        elif work == '2':
-            while True:
-                name = input('请输入想搜索的书名/ISBN:')
-                result = search_booksDir(booklib, name)
-                if result == True:
-                    con = input('你要找的书存在,是否继续查找?(y/n)')
-                    if con == 'N' or con == 'n':
-                        break
-                else:
-                    con = input('你要找的书不存在,是否继续查找?(y/n)')
-                    if con == 'N' or con == 'n':
-                        print('成功退出搜索操作')
-                        break
-        elif work == '3':
-            add_bookDir(booklib)
-        elif work == '4':
-            del_bookDir(booklib)
-        else:
-            print('输入错误请重新输入')
-# 数据存储
+
 def load_data(file_path):
-    pass
+    with open(file_path, 'r') as file:
+        date = json.load(file)
+        return date
 
 
-def save_data(file_path, data):
-    pass
+def save_data(file_path, date):
+    with open(file_path, 'w') as file:
+        json.dump(date, file, skipkeys=False, ensure_ascii=False, indent=4)  # 缩进四个空格
 
 
-def exit_func():
-    pass
+def initload():
+    global admin, book_record, booklib, user, user_record
+    admin = load_data('26admin.json')
+    book_record = load_data('26book_record.json')
+    booklib = load_data('26booklib.json')
+    user = load_data('26user.json')
+    user_record = load_data('26user_record.json')
+    user_record_create()
+    return admin, book_record, booklib, user, user_record
+
+
+def fini_save(admi, book_recor, bookli, use, user_recor):
+    save_data('26admin.json', admi)
+    save_data('26book_record.json', book_recor)
+    save_data('26booklib.json', bookli)
+    save_data('26user.json', use)
+    save_data('26user_record.json', user_recor)
+
+
+def user_record_create():
+    pos = -1
+    for i in user_record:
+        pos += 1
+    while True:
+        if len(book_record) < pos + 1:
+            book_record.append([])
+        else:
+            break
+
+
+"""主函数"""
 
 
 def main():
-    # users = load_data('users.json')
-    # books = load_data('books.json')
-    # borrows = load_data('borrows.json')
-    # add_bookDir(booklib)
-    # view_bookDir(booklib)
-    # del_bookDir(booklib)
-    # borrow_book(booklib,user_record,'lp')
-    # print(login_user())
-    # opration=input('')
-    lib_manager(booklib)
-    # delete_book(booklib)
-    # borrow_book(booklib)
-    # account = input('请输入借书人:')
-    # while True:
-    #     mode = input('请输入操作1查看2借书3还书:')
-    #     account_manager(account, mode, user_record, booklib)
+    # 初始化读取json文件数据
+    admin, book_record, booklib, user, user_record = initload()  # 初始化加载数据
+    while True:
+        temp, username = login_user()
+        if temp == '管理员登录':
+            lib_manager(booklib)
+        elif temp == '普通用户登录':
+            account_manager(username, user_record, booklib, book_record, admin, user)
 
-    # while True:
-    #     # 主菜单
-    #     pass
-    #
-    # save_data('users.json', users)
-    # save_data('books.json', books)
-    # save_data('borrows.json', borrows)
 
+# TODO:报错部分
 
 if __name__ == '__main__':
     main()
-"""
-数据存储：
-所有用户信息和图书信息需要持久化存储到文件中。
-每次启动程序时，从文件中读取数据。
-数据存储：
-使用文件操作将用户信息和图书信息保存到文件中。
-使用异常处理处理文件操作中的可能错误。
-提示：
-退出系统用装饰器写
-使用 json 模块进行文件读写操作。
-使用异常处理 (try/except) 处理文件操作中的错误。
-"""

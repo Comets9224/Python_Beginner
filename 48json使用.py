@@ -1,6 +1,7 @@
-#json用法
+# json用法
 import json
-#json类似 python中的字典
+
+# json类似 python中的字典
 """
 1.python--->转json
 #将 Python 对象转换为 JSON 字符串
@@ -10,11 +11,11 @@ json.dump()方法  dump(变量,文件,skipkeys=False, ensure_ascii=False,indent=
 json.loads() 将json文件类型转成python类型   注意有无s
 """
 data = [{'书名': '水浒', '作者': '施耐庵', 'ISBN': '95535', '出版社信息': '人民教育出版'}]
-json_string = json.dumps(data, skipkeys=False, ensure_ascii=False,indent=4)
+json_string = json.dumps(data, skipkeys=False, ensure_ascii=False, indent=4)
 print(json_string)
-python_string=json.loads(json_string)
+python_string = json.loads(json_string)
 print(python_string)
-#TODO:哪些能放进去?
+# TODO:哪些能放进去?
 """
 哪些数据能传?
 字典（dict）：转换为 JSON 对象。
@@ -28,12 +29,12 @@ None：转换为 JSON 的 null。
 类型限制：JSON 不支持 Python 的一些特有类型，如集合（set）、复数（complex）等。如果需要序列化这些类型，需要自定义序列化方法。
 数值类型：JSON 只支持有限的数值类型（整数和浮点数），不支持 Python 的 Decimal 或 Fraction 类型。
 """
-#TODO:除了w还有哪些?  indent为什么是4
-#indent 是缩进,纯粹为了好看
-#TODO:保证中文编码
+# TODO:除了w还有哪些?  indent为什么是4
+# indent 是缩进,纯粹为了好看
+# TODO:保证中文编码
 
 """
-3.写入json文件:
+3.写入json文件:(中文还要另外注意写进去的编码)
 with open('data.json', 'w') as file:   w应该是write   
     json.dump(data, file, indent=4)
     
@@ -41,9 +42,9 @@ with open('data.json', 'w') as file:   w应该是write
 with open('data.json', 'r') as file:
     data = json.load(file)
 """
-#写入文件
-with open('48test_json.json','w',encoding='utf-8') as file:
-    json.dump(data,file,skipkeys=False, ensure_ascii=False)#中文编码
+# 写入文件
+with open('48test_json.json', 'w', encoding='utf-8') as file:
+    json.dump(data, file, skipkeys=False, ensure_ascii=False)  # 中文编码
     """
         skipkeys：如果为 True，则会跳过不能作为键的对象（如非字符串、非数字的键）；默认为 False。
         ensure_ascii：如果为 True（默认），所有非 ASCII 字符都会被转义；如果为 False，则会输出原始字符。
@@ -58,15 +59,13 @@ with open('48test_json.json','w',encoding='utf-8') as file:
       这是因为 JSON 本身是基于 Unicode 的格式。
       不加encoding也没关系
     """
-#读取文件
-with open('48test_json.json','r',encoding='utf-8')as file:
-    data=json.load(file)
-    data.append({'key':'valuetest'})
+# 读取文件
+with open('48test_json.json', 'r', encoding='utf-8') as file:
+    data = json.load(file)
+    data.append({'key': 'valuetest'})
 print(data)
 
-
-
-#TODO:以下不用写了
+# TODO:以下不用写了
 """
 5.更新json文件
 # 读取 JSON 文件
@@ -88,7 +87,7 @@ del data['is_student']
 with open('data.json', 'w') as file:
     json.dump(data, file, indent=4)
 """
-#TODO:a,w,r,+区别
+# TODO:a,w,r,+区别
 """
 +（更新模式）：在读写模式后加上 +，表示可以同时进行读和写操作。例如：
 r+：打开文件用于读写。文件必须存在。
@@ -96,8 +95,7 @@ w+：打开文件用于读写。如果文件不存在，会创建新文件；如
 a+：打开文件用于读写。如果文件不存在，会创建新文件；如果文件存在，写入的数据会追加到文件末尾。
 """
 
-
-#如果放一个列表,再追加一个列表,json中是怎么放的?,再写入读取试试---->会出错,列表格式会被损坏
+# 如果放一个列表,再追加一个列表,json中是怎么放的?,再写入读取试试---->会出错,列表格式会被损坏
 
 """
 with open('48test_json.json','a',encoding='utf-8') as file:
@@ -136,11 +134,11 @@ with open('data.json', 'w', encoding='utf-8') as file:
 print("数据追加成功")
 """
 
-#append 和 extend 的区别
-#append 方法将参数作为单个元素添加到列表末尾。
-#extend 方法将参数中的所有元素逐个添加到列表末尾。
+# append 和 extend 的区别
+# append 方法将参数作为单个元素添加到列表末尾。
+# extend 方法将参数中的所有元素逐个添加到列表末尾。
 
-#json数据不能单独{},{}存在,必须是一整个数组[{},{},{}]
+# json数据不能单独{},{}存在,必须是一整个数组[{},{},{}]
 """
 在 JSON 文件中，单独的 {} 对象不能直接追加到文件中。
 JSON 格式要求数据结构必须是有效的 JSON 数据类型，
