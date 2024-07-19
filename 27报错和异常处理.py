@@ -6,7 +6,7 @@ print('错误和异常处理:')
 我们要做的是，当异常时，能够避免报错
 #异常处理:
     try:
-        可能出现异常的代码
+        可能出现异常的代码    #当代码异常时，就不执行下去了  而是按顺序跳转到 如果类型1，如果类型2
     except 报错类型1:
         如果出现异常执行的代码
     except 报错类型2:
@@ -15,14 +15,14 @@ print('错误和异常处理:')
         finally不是必须的，finally是无论最后有没有出错都会运行的代码
 
 
-        try能单独使用吗？  用try语句 不会报错，程序能继续进行下去
-except 后面接报错的类型
+        try能单独使用吗？  用try语句 不会报错，程序能继续进行下去  try单独不能使用
+
 多个except 能够联合使用，因为try内有多个异常，只用一个except 是不能精准定位到异常的
 class ERROR  是一个类，错误是一种类。
-class ArithmeticError(exception)    object就到头了#括号内是他继承的类
+class ArithmeticError(exception)    到object就到头了#括号内是他继承的类  最多继承到exception
 object->BaseException->Exception->其他(包括faildnotfound)分支分下去
 
-写写了好几个error，但是有可能有些error你没办法预知，很多error都是exception过去的，所以可以直接
+写写了好几个error，但是有可能有些error你没办法预知，很多error都是从Exception分过去的，所以可以直接
 excep Exception:   就能够包括ERROR包括的很全了
 
 #找except的顺序呢？
@@ -30,7 +30,7 @@ Exception 的辈分最大   顺序是从上往下的，  直接进exception了 �
 辈分最大的，最好是往后放。
 
 #那进了exception了  那我怎么知道exception的具体错误原因呢？
-except Exception as err:
+except Exception as err:    这样可以将err返回打印出来
 print('出错了',err)
 
 如果使用了else,则在try代码中 不能出现return  ，try
@@ -40,7 +40,7 @@ print('出错了',err)
                                             xxxx
 else到达不了了
 
-
+else  也是用于，当没有发生错误时，要进的，但和finally有些区别
 #异常情况4
   finally: 里 通常放close()  不管是否报错，都需要执行close()
   else是只要不报错就会进的,
@@ -87,3 +87,4 @@ else:
 
     #try里不报异常，正常就会往else里走
 
+#raise  会和Exception一起使用   raise Exception()

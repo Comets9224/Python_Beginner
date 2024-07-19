@@ -7,6 +7,7 @@ user = None
 user_record = None
 # TODO:根据输入的用户名或手机号，返回手机号，手机号作为唯一id，避免同名
 # TODO:没有修改密码等等的操作,管理员也没有注销普通用户账户等操作
+
 """用户注册与登录部分函数"""
 
 
@@ -62,7 +63,7 @@ def login_user():
                     break
         if flag == False:
             reg_flag = input('没有此用户,你可选择注册或重新输入，是否注册？(y/n)')  # 是否注册?
-            if reg_flag == 'y' or reg_flag == 'Y':
+            if reg_flag.lower() == 'y':
                 register_user(user_name, password)
 
 
@@ -70,30 +71,36 @@ def login_user():
 
 
 def exit_func(func):
-    def wrapper(*address, **kwargs):
+    def wrapper(*args, **kwargs):
         while True:
-            func(*address, **kwargs)  # 需要修饰的f
+            func(*args, **kwargs)  # 需要修饰的f
             work = input('是否需要退出当前操作？(y/n)')
-            if work == 'y' or work == 'Y':
+            if work.lower() == 'y':
                 break
-            else:
-                pass
 
     return wrapper
 
 
 def account_pos(account, user_record):
-    user_pos = -1
-    for user in user_record:
-        user_pos += 1
+    for user_pos, user in enumerate(user_record):
         if account == user:
             return user_pos
+    return None
 
+
+"""
+enumerate会return 下标和内容,而且会自动遍历
+用法如下:
+my_list = ['a', 'b', 'c', 'd']
+
+for index, value in enumerate(my_list):
+    print(f"Index: {index}, Value: {value}")
+"""
 
 """管理员操作部分"""
 
 
-def lib_manager(booklib):
+def lib_manager(admin, book_record, booklib, user, user_record):
     print('欢迎管理员进入图书管理系统')
     while True:
         work = input("""
@@ -113,12 +120,12 @@ def lib_manager(booklib):
                 result = search_booksDir(booklib, name)
                 if result == True:
                     con = input('你要找的书存在,是否继续查找?(y/n)')
-                    if con == 'N' or con == 'n':
+                    if con.lower() == 'n':
                         print('成功退出搜索操作')
                         break
                 else:
                     con = input('你要找的书不存在,是否继续查找?(y/n)')
-                    if con == 'N' or con == 'n':
+                    if con.lower() == 'n':
                         print('成功退出搜索操作')
                         break
         elif work == '3':
@@ -140,6 +147,8 @@ def add_bookDir(booklib):  # 虽然传参和直接调用全局变量是一样的
         ISBN_flag = False
         for lists in key_list:
             temp = input(f'请输入需要添加书籍的{lists}:')
+            if lists == '库存':
+                temp = int(temp)
             if lists == 'ISBN':
                 for book in booklib:
                     if book.get('ISBN') == temp:
@@ -167,17 +176,16 @@ def view_bookDir(booklib):
 
 
 def search_booksDir(booklib, bookname):
-    while True:
-        flag = 0
-        for i in booklib:
-            if i.get('书名') == bookname or i.get('作者') == bookname:
-                flag += 1
-                print("找到第{}本书书名为:{},作者为{}".format(flag, i.get('书名'), i.get('作者')))
-                return True  # 只会return True  否则判断为False
-        if flag == 0:
-            print('没找到这本书,请重新试试')
-            return False
-        # 返回False 表示没有找到  返回ture 表示找到了
+    flag = 0
+    for i in booklib:
+        if i.get('书名') == bookname or i.get('作者') == bookname:
+            flag += 1
+            print("找到第{}本书书名为:{},作者为{}".format(flag, i.get('书名'), i.get('作者')))
+            return True  # 只会return True  否则判断为False
+    if flag == 0:
+        print('没找到这本书,请重新试试')
+        return False
+    # 返回False 表示没有找到  返回ture 表示找到了
 
 
 decorator_search = exit_func(search_booksDir)  # 单独的搜书功能
@@ -208,7 +216,6 @@ def del_bookDir(booklib):  # TODO:对输入进行检测,书名可能会多一个
 def account_manager(account, user_record, booklib, book_record, admin, user):
     while True:
         mode = input("""
-欢迎登录
 请输入你想进行的操作:
 1.查询借了哪些书
 2.账户还书
@@ -219,9 +226,9 @@ def account_manager(account, user_record, booklib, book_record, admin, user):
         if mode == '1':  # 账户查询已经借了哪些书
             view_borrowed_books(account, user_record, book_record)
         elif mode == '2':  # 账户还书
-            borrow_book(booklib, account)
-        elif mode == '3':  # 账户借书
             return_book(account, user_record, booklib)
+        elif mode == '3':  # 账户借书
+            borrow_book(booklib, account)
         elif mode == '4':
             fini_save(admin, book_record, booklib, user, user_record)
             break
@@ -232,32 +239,45 @@ def borrow_book(booklib, account):
     while True:
         view_bookDir(booklib)
         bookname = input('你想借阅什么书？(重名的书用ISBN输入):')
-        result = search_booksDir(booklib, bookname)  # 如果找到了  返回是True   #输入isbn会报错
+        result = search_booksDir(booklib, bookname)
         user_pos = account_pos(account, user_record)
+
         if result:
-            booklib_pos = -1
-            for books in booklib:
-                booklib_pos += 1
-                if bookname == books.get('书名') or bookname == books.get('ISBN'):
-                    if books['库存'] > 0:
-                        books['库存'] -= 1
-                        print('成功借出一本{}'.format(bookname))
-                        temp = booklib[booklib_pos].copy()
-                        temp.pop('库存')  # pop会返回删除的值   同样的 删除了不需要去接，买了个电视，全家都能看到在这个地址
-                        temp['数量'] = 1  # 初始化赋值
-                        book_found = False
-                        for book in book_record[user_pos]:  # 遍历用户借书记录
-                            if book.get('书名') == temp.get('书名'):
-                                book['数量'] += 1
-                                book_found = True
-                                break
-                        if not book_found:  # 用标志的方法 搞定了数量新建书目不对的问题
-                            book_record[user_pos].append(temp)
-                        print(book_record)
-                    else:
-                        print('库存为0,无法借阅')
-                        view_bookDir(booklib)
-                        # print(book_record)
+            # 找到所有匹配的书籍
+            matching_books = [book for book in booklib if bookname == book.get('书名') or bookname == book.get('ISBN')]
+
+            if len(matching_books) > 1:
+                print("找到多本同名书籍，请通过ISBN确认你要借阅的书籍：")
+                for book in matching_books:
+                    print("书名: {}, 作者: {}, ISBN: {}, 出版社信息: {}, 库存: {}".format(
+                        book['书名'], book['作者'], book['ISBN'], book['出版社信息'], book['库存']
+                    ))
+                bookname = input('请输入你想借阅的书的ISBN:')
+                matching_books = [book for book in booklib if bookname == book.get('ISBN')]
+
+            if len(matching_books) == 1:
+                book = matching_books[0]
+                if book['库存'] > 0:
+                    book['库存'] -= 1
+                    print('成功借出一本{}'.format(book['书名']))
+                    temp = book.copy()
+                    temp.pop('库存')
+                    temp['数量'] = 1
+                    book_found = False
+                    for user_book in book_record[user_pos]:
+                        if user_book.get('书名') == temp.get('书名'):
+                            user_book['数量'] += 1
+                            book_found = True
+                            break
+                    if not book_found:
+                        book_record[user_pos].append(temp)
+                else:
+                    print('库存为0,无法借阅')
+                    view_bookDir(booklib)
+            else:
+                print('未找到匹配的书籍，请重试。')
+        else:
+            print('未找到匹配的书籍，请重试。')
         break
 
 
@@ -304,6 +324,7 @@ def view_borrowed_books(account, user_record, book_record):
 
 
 # TODO:库存等等字段，输入要进行判断，判断是否是数字,是否只有字母,电话号码长度是否足够
+
 """数据存储部分函数"""
 
 
@@ -357,7 +378,7 @@ def main():
     while True:
         temp, username = login_user()
         if temp == '管理员登录':
-            lib_manager(booklib)
+            lib_manager(admin, book_record, booklib, user, user_record)
         elif temp == '普通用户登录':
             account_manager(username, user_record, booklib, book_record, admin, user)
 
