@@ -1,24 +1,13 @@
 import os
-print('错误和异常处理:')
 """
 语法错误和异常
-异常:运行会遇到的问题,程序的鲁棒性问题，出现了异常，下面语句都不会进行了
-我们要做的是，当异常时，能够避免报错
+异常:运行会遇到的问题,程序的鲁棒性问题，出现了异常，下面语句都不会进行了，那如何避免报错导致程序终止呢？
+
 #异常处理:
-    try:
-        可能出现异常的代码    #当代码异常时，就不执行下去了  而是按顺序跳转到 如果类型1，如果类型2
-    except 报错类型1:
-        如果出现异常执行的代码
-    except 报错类型2:
-
-    finally:
-        finally不是必须的，finally是无论最后有没有出错都会运行的代码
-
-
-        try能单独使用吗？  用try语句 不会报错，程序能继续进行下去  try单独不能使用
+        try能单独使用吗？   try不能单独使用
 
 多个except 能够联合使用，因为try内有多个异常，只用一个except 是不能精准定位到异常的
-class ERROR  是一个类，错误是一种类。
+class Error  是一个类，错误是一种类。
 class ArithmeticError(exception)    到object就到头了#括号内是他继承的类  最多继承到exception
 object->BaseException->Exception->其他(包括faildnotfound)分支分下去
 
@@ -33,12 +22,7 @@ Exception 的辈分最大   顺序是从上往下的，  直接进exception了 �
 except Exception as err:    这样可以将err返回打印出来
 print('出错了',err)
 
-如果使用了else,则在try代码中 不能出现return  ，try
-                                            xxxxxx
-                                            return
-                                        else:
-                                            xxxx
-else到达不了了
+
 
 else  也是用于，当没有发生错误时，要进的，但和finally有些区别
 #异常情况4

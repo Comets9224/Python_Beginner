@@ -4,35 +4,41 @@
 
 用户输入的不是数字（ValueError）。
 除数为零（ZeroDivisionError）。
-代码框架
-以下是你可以使用的代码框架：
+异常处理 的语句：
+try:
+    可能会报错的语句
+else:
+    如果没报错会执行的语句
+except Exception as e:                  as e 能将错误返回出来
+    如果报错了后的语句
+finally:
+    无论是否异常都会执行的语句
 
+
+如果使用了else,则在try代码中 不能出现return  ，try
+                                            xxxxxx
+                                            return
+                                        else:
+                                            xxxx
+else到达不了了
 """
-
-def divide():
-    while True:
+def devide():
+    flag=True
+    while flag:
         try:
-            num1 = float(input("请输入第一个数字: "))
-            num2 = float(input("请输入第二个数字: "))
-            result = num1 / num2
-            print(f"结果是: {result}")
-            break
-        except ValueError:
-            # 处理用户输入的不是数字的情况
-            print("输入无效，请输入数字。")
+            x=float(input('请输入除数:'))
+            y=float(input('请输入被除数'))
+            result=x/y
 
-    # except ZeroDivisionError:
-    #     # 处理除数为零的情况
-    #     print("除数不能为零。")
-    #
-    # else:
-    #     # 如果没有发生异常，打印结果
-    #     print(f"结果是: {result}")
-    #
-    # finally:
-    #     # 无论是否发生异常，都会执行的代码
-    #     print("感谢使用我们的除法计算器。")
-
-
+        except ValueError as e:
+            print('请重新输入，不要输入非数字类型字符'+',错误类型:',e)
+        except ZeroDivisionError as e:
+            print('请重新输入，分母不能为0'+',错误类型:',e)
+        else:
+            print(f'结果为{result:.3f}')
+            flag=False
+        finally:
+            print('欢迎您下次继续使用本计算器！')
 # 调用函数以运行程序
-divide()
+if __name__ == '__main__':
+    devide()

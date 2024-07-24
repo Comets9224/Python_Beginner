@@ -1,4 +1,3 @@
-print("helloworld")
 #变量
 #只能是字母数字下划线,数字不能开头,不能使用关键字,严格区分大小写,不能使用关键字
 name='zhangwenwei'

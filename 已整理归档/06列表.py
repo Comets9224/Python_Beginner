@@ -76,12 +76,10 @@ change(list5,2,'红牛')
 print(list5)
 list5[2]='土豆'#直接这个位置修改的方式
 print(list5)
-
-
 #如果说元素比较多，难道也一个个去数位置吗？
 #list也有index函数，index only find the first object，if find the target will stop search  ，return index position
-weizhi =list5.index('土豆')
-list5[weizhi]='还是牛奶吧'
+pos =list5.index('土豆')
+list5[pos]='还是牛奶吧'
 print(list5)
 
 list5.clear()
@@ -138,7 +136,6 @@ print(b,c)
 """
 生成8个1-100之间的随机整数，保存到列表中
 键盘输入一个1-100之间的数，将这个数插入到排序后的列表中
-
 """
 import random
 

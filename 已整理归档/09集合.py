@@ -15,11 +15,6 @@ set
 
 #集合怎么添加元素.add函数
 # set3.add("三体")
-# print(set3)
-# set3.add("三体2")
-# print(set3)
-# set3.add("三体")  #重复元素加不进去的
-# print(set3)
 #append  extend --->list
 #add update ---->set   update 合并
 #集合的移除  remove()  和discard

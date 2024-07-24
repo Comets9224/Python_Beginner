@@ -27,7 +27,7 @@ print(list8)
 
 #格式4，5  两个for循环 三个for循环的都有
 #两个for循环的
-a=[(x,y)for x in range(1,3) for y in range(3)]
+a=[(x,y)  for x in range(1,3) for y in range(3)]
 print(a)
 
 #三个循环的
