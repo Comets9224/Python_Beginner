@@ -1,6 +1,3 @@
-#(继承) is a 和 (组成)has a的区别是?
-#继承是类继承类   组成是类包含类
-
 class Computer:
     def __init__(self,brand,type,color):
         self.brand=brand
@@ -26,7 +23,7 @@ class Student:#has a
         self.books=[]
         self.books.append(book)
 
-    def borrow_book(self,book):
+    def borrow_book(self,book):   #book是形参
         for book1 in self.books:
             if book1.bname== book.bname:
                 print('已经借过这本书')
@@ -50,10 +47,12 @@ computer=Computer('lenovo','y7000p','深灰色')
 book=Book('盗墓笔记','南派三叔',10)
 stu=Student('songsong',computer,book)#传的computer和传songsong一样,传的是一自定义的computer类型
 print(stu)
+print('----------以上是打印电脑属性的程序---------')#会把__str__打印出来有两种情况 一种是打印print的时候,还有一种是str()强转的时候
+
 book1=Book('鬼吹灯','天下霸唱',9)
 stu.show_book()
 stu.borrow_book(book1)
-print('---------------')
+print('-----查看学生借的书-----')
 stu.show_book()
 """
 类型:有int str等自带的类型和自定义类型类,例如Computer类,Book类 
@@ -63,3 +62,13 @@ stu.show_book()
 算是自定义的类，都可以将其当成一种类型，s=Student(),s是student类型的对象
 
 """
+class Person:
+    species = "Homo sapiens"
+
+# 修改类属性
+print(Person.species)  # 输出: Homo sapiens
+
+Person.species = "Homo erectus"
+
+print(Person.species)  # 输出: Homo erectus
+#如果定义了类属性,直接Stu.num=10  可以直接修改类属性

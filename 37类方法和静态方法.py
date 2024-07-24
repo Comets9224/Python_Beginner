@@ -126,7 +126,7 @@ class Person:
         print(Person.__age)  # 是能够打印的,只不过,原来是cls.__age ,现在没有cls,就人工改成Person
 
 
-#不同与原来的cls调用 而是要用类的名才能调用
+# 不同与原来的cls调用 而是要用类的名才能调用
 
 # p1=Person()
 # p1.age=p1.age+1
@@ -142,13 +142,16 @@ class Person:
 
 
 私有化了会怎样？
-外界无法读取也无法修改.
+外界无法读取也无法修改._______>刚创建的时候还是能修改的
 私有化属性主要通过实例方法来访问和修改，因为这些属性与具体的实例相关。
 类方法也可以访问和修改实例的私有化属性，但需要通过实例来操作。
 使用类方法修改实例的私有化属性时，需要确保传入的对象是正确的实例类型。
+
+#好处:可以添加判断.
+#私有化就要设置专门的函数入口 get set
 """
 
-#总得来说,类和对象  就是鸡和蛋的关系 鸡能访问蛋,蛋却管不了鸡
+# 总得来说,类和对象  就是鸡和蛋的关系 鸡能访问蛋,蛋却管不了鸡
 Person.showage()
 print(Person.__age)
 """
@@ -175,3 +178,31 @@ print(Person.__age)
     3.只有创建了对象,才可以调用普通方法(普通方法=对象方法),否则无法调用
     
 """
+
+
+class Student:
+    # __age=18 #类属性
+    def __init__(self, name, age):
+        self.name = name
+        self.age = age
+        self.__score = 59  # __私有化以后  外面能打印查看,但是没有权限修改
+
+    def __str__(self):
+        return '姓名:{},年龄{},考试分数{}'.format(self.name, self.age, self.__score)
+
+    def fix_score(self, temp):
+        self.__score = temp
+
+
+s = Student('cx', 18)
+s.age = 21
+s.score = 95  # 无法修改,只能在类的对象方法内部进行修改
+s.fix_score(95)
+print(s)  # 私有化后,打印可以打 但是单独要取__age 也是没法取的,打印能打的原因是由于__str__是类内部方法
+print(dir(Student))
+print(dir(s))  # 看不到私有的__name,能看到,就是能调用的,看不到,就没法调用
+# print(dir())  dir就是拿到各种函数,和系统自带的Artubute ,为什么访问不到,因为底层自己会进行改名_Student__name,所以私有并不是真的私有
+# 要访问还是能访问的
+# print(s.__Student__age)  可以但不建议
+print(__name__)
+print(s.__dir__())  # 用于返回对象的属性和方法的列表。
