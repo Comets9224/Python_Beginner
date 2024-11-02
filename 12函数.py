@@ -43,7 +43,7 @@ def show_book(**k):
         print(k,v)
 show_book(bookname='西游记')
 #拆包怎么拆
-book={'bookname':'西游记','bookname':'攻楼','bookname':'三国'}
+book={'bookname1':'西游记','bookname2':'攻楼','bookname3':'三国'}
 #show_book(**book)
 
 #两个同时存在咋整？  既有*args 又有**kwargs
@@ -52,9 +52,9 @@ def show_bk(*a,**k):
     print(k)
 show_bk('龙少','小芳',**book)
 
-
+                        
 #只要能放在for in 循环的 都是可迭代的 itreable
-result="#".join(['a','b','c'])
+result="#".join(['a','b','c'])    #将a，b，c 用#链接起来
 print(result)
 
 #返回值  返回值有俩  return min max  如果return返回不是一个值，返回元组
